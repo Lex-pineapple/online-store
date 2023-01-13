@@ -154,7 +154,10 @@ class ProductDetails {
     });
     btnBuyNow?.addEventListener('click', () => {
       this.cart.addToCart(data);
-      this.cart.openModalBool = true;
+      this.cart.initOpenModal(true);
+      setTimeout(() => {
+        window.location.pathname = '/cart';
+      }, 500);
     });
     btnGoToCart?.addEventListener('click', () => {
       window.location.pathname = '/cart';

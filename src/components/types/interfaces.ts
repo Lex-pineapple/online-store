@@ -201,7 +201,7 @@ export interface ICart {
 
   initCartPage(): void;
 
-  initOpenModal(): void;
+  initOpenModal(bool: boolean): void;
 
   initCartLinks(): void;
 
@@ -258,9 +258,9 @@ export interface ICart {
 
   searchPromo(promo: string, type: string[]): void;
 
-  addPromo(value: string): void;
+  addPromo(value: string, appliedPromo: HTMLParagraphElement): void;
 
-  drawPromo(promoName: string, promoAmount: number): void;
+  drawPromo(promoName: string, promoAmount: number, appliedPromo: HTMLParagraphElement): void;
 
   openModal(): void;
 

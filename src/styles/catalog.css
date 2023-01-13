@@ -139,7 +139,9 @@
 
 .filter-content .checkbox__item {
   font-size: 2em;
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
   position: relative;
   margin: 0.5em;
   padding-left: 1.5em;
@@ -149,6 +151,13 @@
   user-select: none;
   scroll-snap-align: start;
   cursor: pointer;
+}
+
+.filter-counter {
+  font-size: 0.8em;
+  background-color: #e0e0e0;
+  border-radius: 0.5em;
+  padding: 0.3em;
 }
 
 .filter-content .checkbox__item-input {
@@ -253,7 +262,7 @@
 }
 
 .search-count-wrapper {
-  display: none;
+  display: inline;
 }
 
 .search-bar,
@@ -406,7 +415,7 @@
 
 .results-wrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
 }
 

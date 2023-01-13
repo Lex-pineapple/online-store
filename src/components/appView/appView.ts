@@ -333,26 +333,26 @@ class AppView implements IAppView {
     const sortKey = sortParams.get('sort');
     if (sortKey == 'priceAsc') {
       filteredArr = filteredArr.sort((a, b) => {
-        if (a.price > b.price) return -1;
-        if (a.price < b.price) return 1;
-        return 0;
-      });
-    } else if (sortKey == 'priceDes') {
-      filteredArr = filteredArr.sort((a, b) => {
         if (a.price < b.price) return -1;
         if (a.price > b.price) return 1;
         return 0;
       });
+    } else if (sortKey == 'priceDes') {
+      filteredArr = filteredArr.sort((a, b) => {
+        if (a.price > b.price) return -1;
+        if (a.price < b.price) return 1;
+        return 0;
+      });
     } else if (sortKey == 'ratingAsc') {
       filteredArr = filteredArr.sort((a, b) => {
-        if (a.rating > b.rating) return -1;
-        if (a.rating < b.rating) return 1;
+        if (a.rating < b.rating) return -1;
+        if (a.rating > b.rating) return 1;
         return 0;
       });
     } else if (sortKey == 'ratingDes') {
       filteredArr = filteredArr.sort((a, b) => {
-        if (a.rating < b.rating) return -1;
-        if (a.rating > b.rating) return 1;
+        if (a.rating > b.rating) return -1;
+        if (a.rating < b.rating) return 1;
         return 0;
       });
     }
