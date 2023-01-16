@@ -29,7 +29,7 @@ class Catalog implements ICatalog {
     div.append(label);
   }
 
-  drawCard(card: Types.Product, div: HTMLDivElement) {
+  drawCard(card: Types.IProduct, div: HTMLDivElement) {
     const productCard = document.createElement('div');
     const productCardLink = document.createElement('a');
     const productImg = document.createElement('img');

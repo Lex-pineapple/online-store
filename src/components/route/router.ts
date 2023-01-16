@@ -1,17 +1,17 @@
 import Init from '../app/init';
-import { IRoute } from '../types/interfaces';
+import { IInit, IRoute } from '../types/interfaces';
 
 class Router {
   public routes: IRoute[];
 
   public rootElem: HTMLDivElement;
 
-  public init: Init;
+  public init: IInit;
 
   constructor(routes: IRoute[]) {
     this.routes = routes;
     this.init = new Init();
-    this.rootElem = document.getElementById('app') as HTMLDivElement;
+    this.rootElem = <HTMLDivElement>document.getElementById('app');
   }
 
   initRoutes(): void {

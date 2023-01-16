@@ -11,11 +11,11 @@ export default class Init implements IInit {
 
   public filtersObj: Types.IFilters;
 
-  public cache: Types.Product[] = [];
+  public cache: Types.IProduct[] = [];
 
-  public filteredArr: Types.Product[] = [];
+  public filteredArr: Types.IProduct[] = [];
 
-  public searchArr: Types.Product[] = [];
+  public searchArr: Types.IProduct[] = [];
 
   public filterQuery = new URLSearchParams(window.location.search);
 
@@ -42,7 +42,7 @@ export default class Init implements IInit {
 
   // Get all product data and load routes
   getData(routeArr: Route[], callback: () => void): void {
-    this.controller.getProducts((data?) => {
+    this.controller.getProducts<Types.IRootObject>((data?) => {
       if (data !== undefined) {
         this.cache = [...data.products];
         this.loadCardRoutes(routeArr, data.products);
@@ -51,7 +51,7 @@ export default class Init implements IInit {
     });
   }
 
-  loadCardRoutes(routeArr: Route[], data: Types.Product[]): void {
+  loadCardRoutes(routeArr: Route[], data: Types.IProduct[]): void {
     for (let i = 0; i < data.length; i++) {
       routeArr.push(new Route(`product-details-${data[i].id}`, 'product-details.html'));
     }
@@ -103,7 +103,7 @@ export default class Init implements IInit {
         this.removeFromQuery('search');
         // change display
         // write to cache data
-        this.controller.getProducts((data?) => {
+        this.controller.getProducts<Types.IRootObject>((data?) => {
           if (data !== undefined) {
             this.cache = [...data.products];
             this.filterProducts(this.cache, this.filtersObj);
@@ -131,8 +131,6 @@ export default class Init implements IInit {
   makeInitialSearch(searchString: string): void {
     const searchParam = <HTMLSpanElement>document.querySelector('.search-param');
     const searchBar = <HTMLInputElement>document.querySelector('.search-bar-input');
-    const resultsWrapper = <HTMLDivElement>document.querySelector('.results-wrapper');
-    const searchCount = <HTMLDivElement>document.querySelector('.search-count-wrapper');
     searchBar.value = searchString;
     if (searchParam) searchParam.style.display = 'inline';
     if (searchParam) searchParam.textContent = `"${searchString}"`;
@@ -141,7 +139,7 @@ export default class Init implements IInit {
 
   initialSearch(value: string): void {
     const searchResults = <HTMLSpanElement>document.querySelector('.search-results');
-    this.controller.getSearchResults(value, (data?) => {
+    this.controller.getSearchResults<Types.IRootObject>(value, (data?) => {
       if (data !== undefined) {
         this.searchArr = [...data.products];
         this.filterProducts(this.cache, this.filtersObj);
@@ -155,7 +153,7 @@ export default class Init implements IInit {
   // * simple search
   search(value: string): void {
     const searchResults = <HTMLSpanElement>document.querySelector('.search-results');
-    this.controller.getSearchResults(value, (data?) => {
+    this.controller.getSearchResults<Types.IRootObject>(value, (data?) => {
       if (data !== undefined) {
         this.searchArr = [...data.products];
         this.filterProducts(this.searchArr, this.filtersObj);
@@ -182,7 +180,7 @@ export default class Init implements IInit {
   initProductDetails(): void {
     const windowHash = window.location.pathname.split('-');
     const productWrapperDiv: HTMLDivElement | null = document.querySelector('.product-wrapper');
-    this.controller.getProductDetails(
+    this.controller.getProductDetails<Types.IProduct>(
       (data?) => {
         if (data !== undefined && productWrapperDiv) {
           this.view.showProductDetails(data);
@@ -252,15 +250,13 @@ export default class Init implements IInit {
   removeSearch(): void {
     this.searchArr = [];
     this.filteredArr = this.cache;
-    const resultsWrapper = <HTMLDivElement>document.querySelector('.results-wrapper');
     const searchBar = <HTMLInputElement>document.querySelector('.search-bar-input');
-    const searchCount = <HTMLDivElement>document.querySelector('.search-count-wrapper');
     const searchParam = <HTMLSpanElement>document.querySelector('.search-param');
     if (searchParam) searchParam.style.display = 'none';
     searchBar.value = '';
   }
 
-  updateCategoryFiltersCountersCheckbox(filteredArr: Types.Product[]) {
+  updateCategoryFiltersCountersCheckbox(filteredArr: Types.IProduct[]) {
     const filtersCountersCheckbox = document.querySelectorAll('.category__item');
     for (let i = 0; i < filtersCountersCheckbox.length; i++) {
       const inputBox = <HTMLInputElement>filtersCountersCheckbox[i].childNodes[1];
@@ -277,7 +273,7 @@ export default class Init implements IInit {
     }
   }
 
-  updateBrandFiltersCountersCheckbox(filteredArr: Types.Product[]) {
+  updateBrandFiltersCountersCheckbox(filteredArr: Types.IProduct[]) {
     const filtersCountersCheckbox = document.querySelectorAll('.brand__item');
     for (let i = 0; i < filtersCountersCheckbox.length; i++) {
       const inputBox = <HTMLInputElement>filtersCountersCheckbox[i].childNodes[1];
@@ -294,7 +290,7 @@ export default class Init implements IInit {
     }
   }
 
-  updatePriceFiltersLabels(filteredArr: Types.Product[]) {
+  updatePriceFiltersLabels(filteredArr: Types.IProduct[]) {
     const filterType = 'price';
     const sliderWrapper = document.querySelector(`.${filterType}-range-wrapper`);
     const sliderInputMin = <HTMLInputElement>sliderWrapper?.querySelector('.range-min');
@@ -309,7 +305,7 @@ export default class Init implements IInit {
     this.view.catalog.calcSliderInput(sliderInputMin, sliderInputMax, inputBoxMin, inputBoxMax, sliderTrack, true);
   }
 
-  updateDiscountFiltersLabels(filteredArr: Types.Product[]) {
+  updateDiscountFiltersLabels(filteredArr: Types.IProduct[]) {
     const filterType = 'discount';
     const sliderWrapper = document.querySelector(`.${filterType}-range-wrapper`);
     const sliderInputMin = <HTMLInputElement>sliderWrapper?.querySelector('.range-min');
@@ -324,7 +320,7 @@ export default class Init implements IInit {
     this.view.catalog.calcSliderInput(sliderInputMin, sliderInputMax, inputBoxMin, inputBoxMax, sliderTrack, true);
   }
 
-  updateStockFiltersLabels(filteredArr: Types.Product[]) {
+  updateStockFiltersLabels(filteredArr: Types.IProduct[]) {
     const filterType = 'stock';
     const sliderWrapper = document.querySelector(`.${filterType}-range-wrapper`);
     const sliderInputMin = <HTMLInputElement>sliderWrapper?.querySelector('.range-min');
@@ -507,9 +503,6 @@ export default class Init implements IInit {
       sliderInputMin.value = inputBoxMin.value;
       sliderInputMax.value = inputBoxMax.value;
       if (inputBoxMin.value == '') sliderInputMin.value = sliderInputMin.min;
-      console.log(inputBoxMin.value);
-
-
       inputVals.min = +inputBoxMin.value;
       inputVals.max = +inputBoxMax.value;
       this.filterProducts(this.cache, this.filtersObj);
@@ -597,7 +590,7 @@ export default class Init implements IInit {
   }
 
   // * Perform Filtering
-  filterProducts(data: Types.Product[], filtersObj: Types.IFilters): void {
+  filterProducts(data: Types.IProduct[], filtersObj: Types.IFilters): void {
     this.filteredArr = [];
     const searchParams = new URLSearchParams(window.location.search);
     if (this.searchArr.length !== 0 || searchParams.has('search')) {
@@ -633,7 +626,6 @@ export default class Init implements IInit {
     );
     const searchResults = document.querySelector('.search-results');
     if (searchResults) searchResults.innerHTML = `${this.filteredArr.length} results `;
-    
   }
 
   // Query related methods

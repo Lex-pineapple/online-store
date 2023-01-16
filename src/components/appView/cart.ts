@@ -233,7 +233,7 @@ class Cart implements ICart {
             console.log(inputArr[i]);
             inputFirstName.setCustomValidity('Invalid date');
             break;
-          }  else {
+          } else {
             inputFirstName.setCustomValidity('');
             console.log('form valid');
           }
@@ -289,7 +289,7 @@ class Cart implements ICart {
             console.log(inputArr[i]);
             inputAddress.setCustomValidity('Invalid date');
             break;
-          }  else {
+          } else {
             inputAddress.setCustomValidity('');
             console.log('form valid');
           }
@@ -666,7 +666,7 @@ class Cart implements ICart {
   }
 
   // Helpers
-  productInCart(product: Types.Product): boolean {
+  productInCart(product: Types.IProduct): boolean {
     for (let i = 0; i < this.cartItems.length; i++) {
       if (this.cartItems[i].product.id === product.id) return true;
     }
@@ -674,7 +674,7 @@ class Cart implements ICart {
   }
 
   // Add/Delete methods
-  initCartAdd(productCardDivCart: Element, product: Types.Product): void {
+  initCartAdd(productCardDivCart: Element, product: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
     const card = document.getElementById(`product-${product.id}`);
@@ -691,7 +691,7 @@ class Cart implements ICart {
     });
   }
 
-  addToCart(product: Types.Product): void {
+  addToCart(product: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
     if (this.cartItems.length === 0) {
@@ -807,7 +807,7 @@ class Cart implements ICart {
     }
   }
 
-  deleteProduct(product: Types.Product): void {
+  deleteProduct(product: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
     for (let i = 0; i < this.cartItems.length; i++) {

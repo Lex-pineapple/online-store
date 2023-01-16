@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace Types {
-  export interface Product {
+  export interface IProduct {
     id: number;
     title: string;
     description: string;
@@ -36,24 +36,26 @@ export namespace Types {
     BRANDS = 'brands',
   }
 
-  export interface RootObject {
-    products: Product[];
+  export interface IRootObject {
+    products: IProduct[];
     total: number;
     skip: number;
     limit: number;
   }
 
   export interface ICartSlot {
-    product: Types.Product;
+    product: Types.IProduct;
     qty: number;
   }
 
   export type TCart = ICartSlot[];
 
-  export type TypesOfData = string[] | RootObject | Product;
+  export type TypesOfData = string[] | IRootObject | IProduct;
 
-  export type CallBackType = (data?: Types.RootObject) => void;
-  export type TProductCallback = (data?: Types.Product) => void;
+  export type TCallBack<T> = (data?: T) => void;
+
+  // export type CallBackType = (data?: Types.RootObject) => void;
+  // export type TProductCallback = (data?: Types.Product) => void;
 
   export interface IOptions {
     id?: number;

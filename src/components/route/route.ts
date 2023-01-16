@@ -1,4 +1,4 @@
-import { IRoute } from "../types/interfaces";
+import { IRoute } from '../types/interfaces';
 
 class Route implements IRoute {
   public name: string;
