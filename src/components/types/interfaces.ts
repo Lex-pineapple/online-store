@@ -8,7 +8,7 @@ export interface ILoader {
 
   makeUrl(options: Types.IOptions): string;
 
-  load(callback: Types.CallBackType, options: Types.IOptions): void;
+  load<T>(callback: Types.TCallBack<T>, options: Types.IOptions): void;
 }
 
 export interface IRoute {
@@ -52,17 +52,17 @@ export interface IInit {
 
   filtersObj: Types.IFilters;
 
-  cache: Types.Product[];
+  cache: Types.IProduct[];
 
-  filteredArr: Types.Product[];
+  filteredArr: Types.IProduct[];
 
-  searchArr: Types.Product[];
+  searchArr: Types.IProduct[];
 
   filterQuery: URLSearchParams;
 
   getData(routeArr: Route[], callback: () => void): void;
 
-  loadCardRoutes(routeArr: Route[], data: Types.Product[]): void;
+  loadCardRoutes(routeArr: Route[], data: Types.IProduct[]): void;
 
   initMainPage(): void;
 
@@ -112,7 +112,7 @@ export interface IInit {
 
   changeCheckboxes(input: NodeListOf<HTMLElement>, index: number, arr: string[], type: string): void;
 
-  filterProducts(data: Types.Product[], filtersObj: Types.IFilters): void;
+  filterProducts(data: Types.IProduct[], filtersObj: Types.IFilters): void;
 
   getQuery(key: string): string | false | null;
 
@@ -134,7 +134,7 @@ export interface IAppView {
 
   cartItems: Types.TCart;
 
-  showProductDetails(data: Types.Product): void;
+  showProductDetails(data: Types.IProduct): void;
 
   createToggle(): void;
 
@@ -142,36 +142,36 @@ export interface IAppView {
 
   createDropdown(): void;
 
-  createCheckFilters(data: Types.Product[], type: string): void;
+  createCheckFilters(data: Types.IProduct[], type: string): void;
 
-  createPriceFilters(data: Types.Product[], filtersObj: Types.IFilters): void;
+  createPriceFilters(data: Types.IProduct[], filtersObj: Types.IFilters): void;
 
-  createStockFilters(data: Types.Product[], filtersObj: Types.IFilters): void;
+  createStockFilters(data: Types.IProduct[], filtersObj: Types.IFilters): void;
 
-  createDiscountFilters(data: Types.Product[], filtersObj: Types.IFilters): void;
+  createDiscountFilters(data: Types.IProduct[], filtersObj: Types.IFilters): void;
 
-  initPages(filteredArr: Types.Product[], pagesCount: number): void;
+  initPages(filteredArr: Types.IProduct[], pagesCount: number): void;
 
-  initPagesandFilter(filteredArr: Types.Product[], filtersObj?: Types.IFilters): void;
+  initPagesandFilter(filteredArr: Types.IProduct[], filtersObj?: Types.IFilters): void;
 
-  createPages(filteredArr: Types.Product[], pagesCount: number): void;
+  createPages(filteredArr: Types.IProduct[], pagesCount: number): void;
 
-  goToPage(filteredArr: Types.Product[], pagesArr: HTMLDivElement[], idx: number): void;
+  goToPage(filteredArr: Types.IProduct[], pagesArr: HTMLDivElement[], idx: number): void;
 
   findPageIdx(pagesArr: HTMLDivElement[]): number;
 
   // Catalog methods
-  createCatalog(filteredArr: Types.Product[], catalogDiv: HTMLDivElement, page: number): void;
+  createCatalog(filteredArr: Types.IProduct[], catalogDiv: HTMLDivElement, page: number): void;
 
-  createSortedCatalog(filteredArr: Types.Product[]): void;
+  createSortedCatalog(filteredArr: Types.IProduct[]): void;
 
-  initSorting(filteredArr: Types.Product[]): void;
+  initSorting(filteredArr: Types.IProduct[]): void;
 
   initSortingVisual(sortParams: URLSearchParams): void;
 
   addToQuery(type: string, sortParams: URLSearchParams): void;
 
-  sortArrayInitial(filteredArr: Types.Product[], sortParams: URLSearchParams): void;
+  sortArrayInitial(filteredArr: Types.IProduct[], sortParams: URLSearchParams): void;
 
   createCart(): void;
 }
@@ -201,7 +201,7 @@ export interface ICart {
 
   initCartPage(): void;
 
-  initOpenModal(): void;
+  initOpenModal(bool: boolean): void;
 
   initCartLinks(): void;
 
@@ -209,7 +209,7 @@ export interface ICart {
 
   initCheckoutLink(): void;
 
-  initModalLinks(): void; 
+  initModalLinks(): void;
 
   initPromoInput(): void;
 
@@ -258,9 +258,9 @@ export interface ICart {
 
   searchPromo(promo: string, type: string[]): void;
 
-  addPromo(value: string): void;
+  addPromo(value: string, appliedPromo: HTMLParagraphElement): void;
 
-  drawPromo(promoName: string, promoAmount: number): void;
+  drawPromo(promoName: string, promoAmount: number, appliedPromo: HTMLParagraphElement): void;
 
   openModal(): void;
 
@@ -268,29 +268,29 @@ export interface ICart {
 
   showMessage(mesType: boolean): void;
 
-  productInCart(product: Types.Product): boolean;
+  productInCart(product: Types.IProduct): boolean;
 
-  initCartAdd(productCardDivCart: Element, product: Types.Product): void;
+  initCartAdd(productCardDivCart: Element, product: Types.IProduct): void;
 
-  addToCart(product: Types.Product): void;
+  addToCart(product: Types.IProduct): void;
 
   addItem(item: Types.ICartSlot, itemPos: number, position: boolean): void;
 
   deleteItem(item: Types.ICartSlot): void;
 
-  deleteProduct(product: Types.Product): void;
+  deleteProduct(product: Types.IProduct): void;
 }
 
 export interface IProductDetails {
   cart: ICart;
 
-  drawProduct(data: Types.Product): void;
+  drawProduct(data: Types.IProduct): void;
 
-  drawCrumbs(data: Types.Product): void;
+  drawCrumbs(data: Types.IProduct): void;
 
-  drawProductDescr(data: Types.Product): void;
+  drawProductDescr(data: Types.IProduct): void;
 
-  drawProductImgs(data: Types.Product): void;
+  drawProductImgs(data: Types.IProduct): void;
 
   selectImage(dataImages: string[], imgThumbs: HTMLElement[], mainImg: HTMLDivElement): void;
 
@@ -300,13 +300,13 @@ export interface IProductDetails {
 
   removeMagnify(): void;
 
-  initButtons(data: Types.Product): void;
+  initButtons(data: Types.IProduct): void;
 }
 
 export interface ICatalog {
   drawCategory(category: string, div: HTMLDivElement, name: string): void;
 
-  drawCard(card: Types.Product, div: HTMLDivElement): void;
+  drawCard(card: Types.IProduct, div: HTMLDivElement): void;
 
   drawSliderFilter(filterCat: { min: number; max: number }, filterType: string): void;
 
@@ -325,11 +325,11 @@ export interface ICatalog {
 }
 
 export interface IAppController {
-  getProducts(callback: Types.CallBackType, options?: Types.IOptions): void;
+  getProducts<T>(callback: Types.TCallBack<T>, options?: Types.IOptions): void;
 
-  getProductDetails(callback: Types.TProductCallback, options: Types.IOptions): void;
+  getProductDetails<T>(callback: Types.TCallBack<T>, options: Types.IOptions): void;
 
-  getCategories(callback: Types.CallBackType): void;
+  getCategories<T>(callback: Types.TCallBack<T>): void;
 
-  getSearchResults(searchString: string, callback: Types.CallBackType): void;
+  getSearchResults<T>(searchString: string, callback: Types.TCallBack<T>): void;
 }

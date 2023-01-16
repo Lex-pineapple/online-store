@@ -29,8 +29,7 @@ class Cart implements ICart {
     // init cart items
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
-
-    if (this.openModal) this.openModal();
+    if (localStorage.getItem('openModal')) this.openModal();
     // init Number of entries on page & calc the amount of pages
     let currPage = this.getFromQuery('page') ? Number(this.getFromQuery('page')) - 1 : 0;
     this.entriesOnPage = this.getFromQuery('entries') ? Number(this.getFromQuery('entries')) : 3;
@@ -53,15 +52,8 @@ class Cart implements ICart {
     }
   }
 
-  initOpenModal(): void {
-    const cartDiv = document.querySelector('.cart');
-    if (cartDiv) {
-      this.fillCart(0);
-    }
-    console.log('open modal');
-
-    this.openModal();
-    this.openModalBool = false;
+  initOpenModal(bool: boolean): void {
+    localStorage.setItem('openModal', 'true');
   }
 
   // ***
@@ -124,13 +116,13 @@ class Cart implements ICart {
 
   initPromoInput(): void {
     const promocodeInput = <HTMLInputElement>document.querySelector('.promocode-input');
-    const btnApply = document.querySelector('.btn-submit');
-    promocodeInput?.addEventListener('change', () => {
+    // const btnApply = document.querySelector('.btn-submit');
+    promocodeInput?.addEventListener('input', () => {
       this.searchPromo(promocodeInput.value, Types.promos);
     });
-    btnApply?.addEventListener('change', () => {
-      this.searchPromo(promocodeInput.value, Types.promos);
-    });
+    // btnApply?.addEventListener('change', () => {
+    //   this.searchPromo(promocodeInput.value, Types.promos);
+    // });
   }
 
   // cart item links
@@ -226,17 +218,55 @@ class Cart implements ICart {
       }
     }
     const inputCVV = <HTMLInputElement>document.querySelector('.input-cvv');
+    const inputAddress = <HTMLInputElement>document.querySelector('.input-address');
     const inputExpiry = <HTMLInputElement>document.querySelector('.input-expiry');
+    const inputCardNum = <HTMLInputElement>document.querySelector('.input-card-num');
+    const inputLogo = <HTMLDivElement>document.querySelector('.input-logo');
+    const inputFirstName = <HTMLInputElement>document.querySelector('.input-first-name');
+    inputFirstName.addEventListener('input', () => {
+      const inputArr = inputFirstName.value.split(' ');
+      if (inputArr.length < 2) {
+        inputFirstName.setCustomValidity('Invalid date');
+      } else {
+        for (let i = 0; i < inputArr.length; i++) {
+          if (inputArr[i].length < 3) {
+            console.log(inputArr[i]);
+            inputFirstName.setCustomValidity('Invalid date');
+            break;
+          } else {
+            inputFirstName.setCustomValidity('');
+            console.log('form valid');
+          }
+        }
+      }
+    });
     inputCVV.addEventListener('input', () => {
       if (isNaN(Number(inputCVV.value))) inputCVV.value = '';
     });
+    inputCardNum.addEventListener('input', () => {
+      if (isNaN(Number(inputCardNum.value))) {
+        inputCardNum.value = '';
+        inputLogo.style.backgroundImage = 'transparent';
+      }
+      if (inputCardNum.value == '') inputLogo.style.backgroundImage = 'none';
+      if (inputLogo) {
+        if (+inputCardNum.value.charAt(0) == 5)
+          inputLogo.style.backgroundImage = "url('../assets/icons/Mastercard_logo.jpg')";
+        else if (+inputCardNum.value.charAt(0) == 4)
+          inputLogo.style.backgroundImage = "url('../assets/icons/visa-logo0.webp')";
+        else if (+inputCardNum.value.charAt(0) == 8)
+          inputLogo.style.backgroundImage = "url('../assets/icons/UnionPay-logo.png')";
+        else inputLogo.style.backgroundImage = 'none';
+      }
+    });
     inputExpiry.addEventListener('input', () => {
+      if (isNaN(Number(inputExpiry.value))) inputExpiry.value = '';
       if (inputExpiry.value.match(/\//g))
         inputExpiry.value = inputExpiry.value.slice(0, 2) + inputExpiry.value.slice(3);
       if (
         +inputExpiry.value.slice(0, 2) > 12 ||
         +inputExpiry.value.slice(0, 2) < 0 ||
-        +inputExpiry.value.slice(2) > 31 ||
+        +inputExpiry.value.slice(2) > 99 ||
         +inputExpiry.value.slice(2) < 0
       ) {
         inputExpiry.setCustomValidity('Invalid date');
@@ -247,7 +277,24 @@ class Cart implements ICart {
         inputExpiry.value = inputExpiry.value.slice(0, 2) + '/' + inputExpiry.value.slice(2);
       }
       if (+inputExpiry.value.slice(0, 2) > 12 || +inputExpiry.value.slice(0, 2) < 0) inputExpiry.value = '';
-      if (+inputExpiry.value.slice(3) > 31 || +inputExpiry.value.slice(3) < 0) inputExpiry.value = '';
+      if (+inputExpiry.value.slice(3) > 99 || +inputExpiry.value.slice(3) < 0) inputExpiry.value = '';
+    });
+    inputAddress.addEventListener('input', () => {
+      const inputArr = inputAddress.value.split(' ');
+      if (inputArr.length < 3) {
+        inputAddress.setCustomValidity('Invalid date');
+      } else {
+        for (let i = 0; i < inputArr.length; i++) {
+          if (inputArr[i].length < 5) {
+            console.log(inputArr[i]);
+            inputAddress.setCustomValidity('Invalid date');
+            break;
+          } else {
+            inputAddress.setCustomValidity('');
+            console.log('form valid');
+          }
+        }
+      }
     });
   }
 
@@ -435,36 +482,60 @@ class Cart implements ICart {
 
   // Promo related methods
   searchPromo(promo: string, type: string[]): void {
+    let foundPromo = '';
     for (let i = 0; i < type.length; i++) {
-      if (promo == type[i].split('/')[0]) this.addPromo(type[i]);
+      if (promo == type[i].split('/')[0]) {
+        foundPromo = type[i];
+        break;
+      }
+    }
+    if (foundPromo) this.createPromoAdder(foundPromo);
+    else {
+      document.querySelector('.toApply')?.remove();
     }
   }
 
-  addPromo(value: string): void {
+  createPromoAdder(value: string) {
+    if (!this.appliedPromos.includes(value)) {
+      const promoName = value.split('/')[0];
+      const promoPc = +value.split('/')[1];
+      const promoInputWrapper = document.querySelector('.promocode-input-wrapper');
+      const appliedPromo = document.createElement('p');
+      appliedPromo.classList.add('applied-promo');
+      appliedPromo.innerHTML = `Found promocode ${promoName} with ${promoPc}% discoount`;
+      appliedPromo.classList.add('toApply');
+      if (promoInputWrapper) promoInputWrapper.append(appliedPromo);
+      appliedPromo.addEventListener(
+        'click',
+        () => {
+          this.addPromo(value, appliedPromo);
+        },
+        { once: true }
+      );
+    }
+  }
+
+  addPromo(value: string, appliedPromo: HTMLParagraphElement): void {
     if (!this.appliedPromos.includes(value)) {
       const promoName = value.split('/')[0];
       const promoPc = +value.split('/')[1];
       this.appliedPromos.push(value);
       this.promoPc += promoPc;
-      this.drawPromo(promoName, promoPc);
+      this.drawPromo(promoName, promoPc, appliedPromo);
     }
   }
 
-  drawPromo(promoName: string, promoAmount: number): void {
-    const promoInputWrapper = document.querySelector('.promocode-input-wrapper');
-    const appliedPromo = document.createElement('p');
-    appliedPromo.classList.add('applied-promo');
+  drawPromo(promoName: string, promoAmount: number, appliedPromo: HTMLParagraphElement): void {
     const amSubt = <HTMLParagraphElement>document.querySelector('.amount-subtotal');
-    if (promoInputWrapper && appliedPromo && amSubt) {
-      appliedPromo.innerHTML = `Applied promo <b class="strong-promo-name">${promoName}</b> with <b class="strong-promo-amount">${promoAmount}%</b> discount`;
-      promoInputWrapper.append(appliedPromo);
-      this.updateCheckout();
-      amSubt.style.textDecoration = 'line-through';
-    }
+    appliedPromo.classList.remove('toApply');
+    appliedPromo.innerHTML = `Applied promo <b class="strong-promo-name">${promoName}</b> with <b class="strong-promo-amount">${promoAmount}%</b> discount`;
+    this.updateCheckout();
+    amSubt.style.textDecoration = 'line-through';
   }
 
   // Modal related methods
   openModal(): void {
+    localStorage.removeItem('openModal');
     const modal = document.querySelector('.modal');
     const overlay = document.querySelector('.overlay');
     if (modal && overlay) {
@@ -494,21 +565,42 @@ class Cart implements ICart {
     const inputCVV = <HTMLInputElement>document.querySelector('.input-cvv');
     const inputExpiry = <HTMLInputElement>document.querySelector('.input-expiry');
 
-    if (inputFirstName && inputLastName) {
-      if (inputFirstName.value.length < 3 || inputLastName.value.length < 3) formValid = false;
+    if (inputFirstName) {
+      const inputArr = inputFirstName.value.split(' ');
+      if (inputArr.length < 2) {
+        console.log('inputFirstName');
+        formValid = false;
+      } else {
+        for (let i = 0; i < inputArr.length; i++) {
+          if (inputArr[i].length < 3) {
+            console.log('inputFirstName');
+            formValid = false;
+            break;
+          }
+        }
+      }
     }
 
     if (inputPhone) {
-      if (!inputPhone.value.match(/\+\d{9}/g)) {
+      if (!inputPhone.value.match(/\+\d{9,}/g)) {
         console.log('inputPhone');
         formValid = false;
       }
     }
 
     if (inputAddress) {
-      if (!inputAddress.value.match(/^(\b[A-Za-z]{3,15}\s+[A-Za-z]{3,15}\s+[\d\-]{3,7}\b)$/g)) {
+      const inputArr = inputAddress.value.split(' ');
+      if (inputArr.length < 3) {
         console.log('inputAddress');
         formValid = false;
+      } else {
+        for (let i = 0; i < inputArr.length; i++) {
+          if (inputArr[i].length < 5) {
+            console.log('inputAddress');
+            formValid = false;
+            break;
+          }
+        }
       }
     }
 
@@ -558,6 +650,8 @@ class Cart implements ICart {
     if (mesType) {
       modalBtn.remove();
       modalTxt.innerHTML = 'The order was successfully completed!\nRedirecting...';
+      this.cartItems = [];
+      localStorage.removeItem('onlineStoreCart112547');
       setTimeout(() => {
         window.location.pathname = '/catalog';
       }, 5000);
@@ -572,7 +666,7 @@ class Cart implements ICart {
   }
 
   // Helpers
-  productInCart(product: Types.Product): boolean {
+  productInCart(product: Types.IProduct): boolean {
     for (let i = 0; i < this.cartItems.length; i++) {
       if (this.cartItems[i].product.id === product.id) return true;
     }
@@ -580,7 +674,7 @@ class Cart implements ICart {
   }
 
   // Add/Delete methods
-  initCartAdd(productCardDivCart: Element, product: Types.Product): void {
+  initCartAdd(productCardDivCart: Element, product: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
     const card = document.getElementById(`product-${product.id}`);
@@ -597,7 +691,7 @@ class Cart implements ICart {
     });
   }
 
-  addToCart(product: Types.Product): void {
+  addToCart(product: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
     if (this.cartItems.length === 0) {
@@ -713,7 +807,7 @@ class Cart implements ICart {
     }
   }
 
-  deleteProduct(product: Types.Product): void {
+  deleteProduct(product: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cartItems = JSON.parse(storagedItems);
     for (let i = 0; i < this.cartItems.length; i++) {

@@ -8,13 +8,13 @@ class Loader implements ILoader {
     this.baseLink = baseLink;
   }
 
-  getResp(
+  getResp<T>(
     callback = () => {
       console.error('No callback for GET response');
     },
     options: Types.IOptions
   ): void {
-    this.load(callback, options);
+    this.load<T>(callback, options);
   }
 
   makeUrl(options: Types.IOptions): string {
@@ -34,10 +34,10 @@ class Loader implements ILoader {
     }
   }
 
-  load(callback: Types.CallBackType, options: Types.IOptions): void {
+  load<T>(callback: Types.TCallBack<T>, options: Types.IOptions): void {
     fetch(this.makeUrl(options))
       .then((res) => res.json())
-      .then((data) => callback(data))
+      .then((data: T) => callback(data))
       .catch((err) => console.error(err));
   }
 }

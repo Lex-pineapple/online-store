@@ -16,6 +16,8 @@ class App implements IApp {
   start(): void {
     this.router.initRoutes();
     this.router.startRouter();
+    console.log('Промокоды: FIRELINK, DOGDOG, PALISADE, PIRANHA');
+    console.log('В блоке ввода срока действия карты косая черта появляется при нажатии enter');
   }
 }
 

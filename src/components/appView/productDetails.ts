@@ -9,21 +9,21 @@ class ProductDetails {
     this.cart = cart;
   }
 
-  drawProduct(data: Types.Product): void {
+  drawProduct(data: Types.IProduct): void {
     this.drawCrumbs(data);
     this.drawProductDescr(data);
     this.drawProductImgs(data);
     this.cart.updateHeader();
   }
 
-  drawCrumbs(data: Types.Product): void {
+  drawCrumbs(data: Types.IProduct): void {
     const crumbs = document.querySelectorAll('.crumb');
     crumbs[1].innerHTML = capitalizeExpr(data.category);
     crumbs[2].innerHTML = capitalizeExpr(data.brand);
     crumbs[3].innerHTML = data.title;
   }
 
-  drawProductDescr(data: Types.Product): void {
+  drawProductDescr(data: Types.IProduct): void {
     // select all elements
     const productBrand = document.querySelector('.product-brand');
     const productCategory = document.querySelector('.product-category');
@@ -58,7 +58,7 @@ class ProductDetails {
     this.initButtons(data);
   }
 
-  drawProductImgs(data: Types.Product): void {
+  drawProductImgs(data: Types.IProduct): void {
     // select imgs elements
     const mainImg = <HTMLDivElement>document.querySelector('.product-img');
     const images = data.images;
@@ -124,7 +124,7 @@ class ProductDetails {
     document.querySelector('.modal-prodDetails')?.remove();
   }
 
-  initButtons(data: Types.Product): void {
+  initButtons(data: Types.IProduct): void {
     const storagedItems = localStorage.getItem('onlineStoreCart112547');
     if (storagedItems) this.cart.cartItems = JSON.parse(storagedItems);
     const btnAdd = document.querySelector('.button-add');
@@ -154,7 +154,10 @@ class ProductDetails {
     });
     btnBuyNow?.addEventListener('click', () => {
       this.cart.addToCart(data);
-      this.cart.openModalBool = true;
+      this.cart.initOpenModal(true);
+      setTimeout(() => {
+        window.location.pathname = '/cart';
+      }, 500);
     });
     btnGoToCart?.addEventListener('click', () => {
       window.location.pathname = '/cart';

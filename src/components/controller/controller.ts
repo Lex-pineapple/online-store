@@ -2,23 +2,22 @@ import AppLoader from './appLoader';
 import { Types } from '../types/Types';
 
 export default class AppController extends AppLoader {
-  getProducts(callback: Types.CallBackType, options: Types.IOptions = {}): void {
-    super.getResp(callback, options);
+  getProducts<T>(callback: Types.TCallBack<T>, options: Types.IOptions = {}): void {
+    super.getResp<T>(callback, options);
   }
 
-  getProductDetails(callback: Types.TProductCallback, options: Types.IOptions = {}): void {
-    // Show Product Details
-    super.getResp(callback, options);
+  getProductDetails<T>(callback: Types.TCallBack<T>, options: Types.IOptions = {}): void {
+    super.getResp<T>(callback, options);
   }
 
-  getCategories(callback: Types.CallBackType): void {
-    super.getResp(callback, {
+  getCategories<T>(callback: Types.TCallBack<T>): void {
+    super.getResp<T>(callback, {
       endpoint: Types.Endpoint.CATEGORIES,
     });
   }
 
-  getSearchResults(searchString: string, callback: Types.CallBackType): void {
-    super.getResp(callback, {
+  getSearchResults<T>(searchString: string, callback: Types.TCallBack<T>): void {
+    super.getResp<T>(callback, {
       endpoint: Types.Endpoint.SEARCH,
       search: searchString,
     });

@@ -7,10 +7,13 @@ class Catalog implements ICatalog {
     const label = document.createElement('label');
     const input = document.createElement('input');
     const span = document.createElement('span');
+    const filterCounter = document.createElement('div');
 
     label.className = `checkbox__item ${name}__item`;
     input.className = `checkbox__item-input ${name}__item-input`;
     span.className = 'checkmark';
+    filterCounter.className = 'filter-counter';
+    filterCounter.textContent = '';
     if (name == 'category') {
       label.textContent = capitalizeExpr(category);
     } else {
@@ -22,10 +25,11 @@ class Catalog implements ICatalog {
 
     label.append(input);
     label.append(span);
+    label.append(filterCounter);
     div.append(label);
   }
 
-  drawCard(card: Types.Product, div: HTMLDivElement) {
+  drawCard(card: Types.IProduct, div: HTMLDivElement) {
     const productCard = document.createElement('div');
     const productCardLink = document.createElement('a');
     const productImg = document.createElement('img');
